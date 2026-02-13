@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block header %}Admin Dashboard{% endblock %}
+{% block content %}
+    <p>Welcome, {{ user.first_name|default:user.username }}!</p>
+    <p>
+      <a class="btn" href="{% url 'upload_csv' %}">Upload Pressure Data CSV</a>
+    </p>
+{% endblock %}

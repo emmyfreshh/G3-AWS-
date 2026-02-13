@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Clinician Dashboard{% endblock %}
+{% block header %}Clinician Dashboard{% endblock %}
+{% block content %}
+    <p>Welcome, {{ user.first_name|default:user.username }}!</p>
+{% endblock %}

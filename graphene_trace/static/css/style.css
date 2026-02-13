@@ -1,0 +1,36 @@
+/* Professional theme adjustments (complements Bootstrap)
+   This file intentionally keeps rules minimal and lets Bootstrap handle most layout.
+*/
+:root{
+  --brand: #0b63d6;
+  --accent:#16325c;
+  --muted:#6b7280;
+}
+body{
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: #f1f5f9;
+  color: #1f2937;
+}
+.container{
+  max-width: 980px;
+  margin-top: 28px;
+}
+.card-custom{
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(17,24,39,0.06);
+}
+h1,h2,h3{ color:var(--accent); }
+a{ color: var(--brand); }
+.small-muted{ color: var(--muted); }
+.table{ width:100%; border-collapse:collapse; }
+.table td, .table th{ padding:10px 12px; border-bottom:1px solid #eef2f7; }
+.text-danger{ color:#d9534f; }
+/* Heatmap and dashboard tweaks */
+#pressure-map{ min-height:340px; }
+#heatmapContainer{ position:relative; }
+#heatmapContainer canvas{ width:100% !important; height:100% !important; }
+.btn-primary{ background:var(--brand); border-color:var(--brand); }
+.alert{ border-radius:8px; }
+

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Confirm CSV Upload{% endblock %}
+{% block header %}Confirm CSV Upload{% endblock %}
+{% block content %}
+    <h4>Preview</h4>
+    {% if preview.is_matrix %}
+        <p>This file looks like a headerless numeric matrix.</p>
+        <p>Non-empty cells: {{ preview.non_empty_cells }}</p>
+    {% else %}
+        <p>Rows with valid pressure values: {{ preview.row_count }}</p>
+    {% endif %}
+    <h5>Sample</h5>
+    <ul>
+        {% for s in preview.sample %}
+            <li>{{ s.sensor_location }} — {{ s.pressure_value }}</li>
+        {% endfor %}
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="tmp_path" value="{{ tmp_path }}" />
+        <button type="submit" name="confirm" value="1" class="btn btn-danger">Confirm and Import</button>
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

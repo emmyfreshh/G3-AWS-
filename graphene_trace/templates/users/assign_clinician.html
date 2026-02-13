@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Assign Clinician{% endblock %}
+{% block header %}Assign Clinician to {{ patient.username }}{% endblock %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="clinician">Select Clinician:</label>
+        <select id="clinician" name="clinician">
+            <option value="">None</option>
+            {% for clinician in clinicians %}
+                <option value="{{ clinician.id }}" {% if patient.clinician == clinician %}selected{% endif %}>{{ clinician.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Assign</button>
+        <a class="btn" href="{% url 'user_list' %}">Cancel</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Patient History{% endblock %}
+{% block header %}{{ patient.first_name }} {{ patient.last_name }} - Pressure History{% endblock %}
+{% block content %}
+    <p><a href="{% url 'patient_detail' patient.id %}">Back to Patient Detail</a></p>
+
+    <canvas id="pressureChart" width="400" height="200"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('pressureChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: 'Pressure Value',
+                    data: {{ values|safe }},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    <h3>Data Points</h3>
+    {% for d in data %}
+        <p {% if d.pressure_value > 100 %}class="text-danger font-weight-bold"{% endif %}>{{ d.timestamp }}: {{ d.pressure_value }} ({{ d.sensor_location }}) {% if d.pressure_value > 100 %}- HIGH PRESSURE{% endif %}</p>
+    {% empty %}
+        <p class="small-muted">No data available.</p>
+    {% endfor %}
+{% endblock %}

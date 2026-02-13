@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}User List{% endblock %}
+{% block header %}All Users{% endblock %}
+{% block content %}
+    <p>
+      <a class="btn btn-primary" href="{% url 'create_user' %}">Create New User</a>
+    </p>
+
+    <table class="table">
+    {% for user in users %}
+        <tr>
+            <td>{{ user.username }} - {{ user.role }} - {{ user.email }}</td>
+            <td>
+            {% if user.role == 'patient' %}
+                Clinician: {{ user.clinician.username|default:'None' }}
+                <a href="{% url 'assign_clinician' user.id %}">Assign Clinician</a>
+            {% endif %}
+            </td>
+            <td>
+                <a class="btn" href="{% url 'reset_password' user.id %}">Reset Password</a>
+                <form method="post" action="{% url 'delete_user' user.id %}" style="display:inline;" data-confirm="Delete this user?">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

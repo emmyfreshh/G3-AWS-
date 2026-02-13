@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Your Comments{% endblock %}
+{% block header %}Your Comments{% endblock %}
+{% block content %}
+    
+    <h3>Add a Comment</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Comment</button>
+    </form>
+
+    <h3>Your Comments</h3>
+    {% for comment in comments %}
+        <div class="container">
+            <p><strong>You</strong> at {{ comment.timestamp }}</p>
+            <p>{{ comment.text }}</p>
+            {% if comment.pressure_data %}
+                <p>Related to: {{ comment.pressure_data.sensor_location }} at {{ comment.pressure_data.timestamp }}</p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p class="small-muted">No comments yet.</p>
+    {% endfor %}
+{% endblock %}

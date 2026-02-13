@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Upload CSV{% endblock %}
+{% block header %}Upload Pressure Data CSV{% endblock %}
+{% block content %}
+    <p>CSV should have columns: sensor_location, pressure_value. Select patient from the dropdown.</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+{% endblock %}

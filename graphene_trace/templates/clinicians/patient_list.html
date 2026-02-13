@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Patient List{% endblock %}
+{% block extra_css %}{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-2 wf-sidebar">
+            <div class="list-group">
+                <a class="list-group-item list-group-item-action">Dashboard</a>
+                <a class="list-group-item list-group-item-action active">My Patients</a>
+                <a class="list-group-item list-group-item-action">Alerts</a>
+            </div>
+        </div>
+        <div class="col-10">
+            <h3>My Patients</h3>
+            <form method="get" class="mb-2">
+                <div class="d-flex gap-2">
+                    <input type="text" name="q" class="form-control" placeholder="Search by name or room">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterAlerts" name="filter_alerts" {% if filter_alerts %}checked{% endif %}>
+                        <label class="form-check-label" for="filterAlerts">Only with alerts</label>
+                    </div>
+                    <button class="btn btn-primary">Search</button>
+                </div>
+            </form>
+
+            <div class="wf-container">
+                <ul class="list-unstyled mb-0">
+                    {% for patient, alerts in patients %}
+                        <li class="py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ patient.first_name }} {{ patient.last_name }}</strong>
+                                <div class="small text-muted">{{ patient.username }}</div>
+                            </div>
+                            <div>
+                                {% if alerts > 0 %}<span class="badge bg-danger">{{ alerts }} alerts</span>{% endif %}
+                                <a class="btn btn-link" href="{% url 'patient_detail' patient.id %}">View Details</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

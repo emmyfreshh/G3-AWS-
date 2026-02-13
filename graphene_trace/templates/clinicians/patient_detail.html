@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Patient Detail{% endblock %}
+{% block extra_css %}{% endblock %}
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/heatmapjs@2.0.5/build/heatmap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const canvas = document.createElement('canvas');
+            canvas.id = 'patientCanvas'; canvas.width=512; canvas.height=512; canvas.style.width='100%';
+            const holder = document.getElementById('patientHeatmap');
+            if(holder) holder.appendChild(canvas);
+            const pid = {{ patient.id }};
+            const suggestionEl = document.createElement('div');
+            suggestionEl.id = 'reposition-suggestion';
+            suggestionEl.style.marginTop = '8px';
+            holder.parentNode.insertBefore(suggestionEl, holder.nextSibling);
+
+            function drawGrid(j){
+                const ctx = canvas.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                if(!j || !j.cells || !j.cells.length) return;
+                let maxR=0,maxC=0; j.cells.forEach(c=>{ if(c.r!==undefined){maxR=Math.max(maxR,c.r);maxC=Math.max(maxC,c.c);} });
+                if(maxR||maxC){
+                    const rows=maxR+1, cols=maxC+1, cellW=canvas.width/cols, cellH=canvas.height/rows;
+                    const vals=j.cells.filter(c=>c.value!==undefined).map(c=>c.value);
+                    const minV=Math.min.apply(null, vals.length?vals:[0]);
+                    const maxV=Math.max.apply(null, vals.length?vals:[1]);
+                    j.cells.forEach(cell=>{
+                        if(cell.r===undefined) return;
+                        const v=cell.value||0; const t=(v-minV)/Math.max(1e-6,(maxV-minV));
+                        const color=(function(t){const r=Math.floor(255*Math.min(1,Math.max(0,(t-0.75)/0.25))); const g=Math.floor(255*(1-Math.abs(t-0.5)*2)); const b=Math.floor(255*Math.min(1,Math.max(0,(0.5-t)/0.5))); return `rgb(${r},${g},${b})`; })(t);
+                        ctx.fillStyle=color; ctx.fillRect(cell.c*cellW, cell.r*cellH, cellW, cellH);
+                    });
+                }
+            }
+
+            function fetchAndUpdate(){
+                fetch(`/clinicians/api/patient/${pid}/live-grid/`, { credentials: 'same-origin' })
+                    .then(r=>{ if(!r.ok) throw new Error('Network'); return r.json(); })
+                    .then(j=>{
+                        drawGrid(j);
+                        if(j.reposition){ suggestionEl.textContent = j.reposition.reason + (j.reposition.confidence? (' (confidence: '+Math.round(j.reposition.confidence*100)+'%)') : ''); suggestionEl.className = 'alert alert-warning'; }
+                    })
+                    .catch(e=>{ console.warn('fetch failed', e); });
+            }
+
+            fetchAndUpdate();
+            setInterval(fetchAndUpdate, 2000);
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+    <div class="row">
+        <div class="col-8">
+            <div id="patientHeatmap" class="wf-container"></div>
+        </div>
+        <div class="col-4">
+            <div class="wf-container">
+                <h5>Recent Alerts</h5>
+                <ul>
+                    {% for d in recent_data|slice:5 %}
+                        <li>{{ d.sensor_location }} — {{ d.pressure_value }} at {{ d.timestamp }}</li>
+                    {% empty %}
+                        <li>No recent data</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <p>
+        <a class="btn" href="{% url 'patient_history' patient.id %}">View Full History</a>
+        <a class="btn" href="{% url 'patient_comments' patient.id %}">View Comments</a>
+    </p>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Patient Comments{% endblock %}
+{% block header %}{{ patient.first_name }} {{ patient.last_name }} - Comments{% endblock %}
+{% block content %}
+    <p><a href="{% url 'patient_detail' patient.id %}">Back to Patient Detail</a></p>
+
+    <h3>Reply to Patient</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Reply</button>
+    </form>
+
+    <h3>Comments</h3>
+    {% for comment in comments %}
+        <div class="container">
+            <p>
+                <strong>
+                    {% if comment.clinician %}
+                    {{ comment.clinician.username }}
+                    {% else %}
+                    {{ comment.patient.username }}
+                    {% endif %}
+                </strong>
+                at {{ comment.timestamp }}
+            </p>
+
+            <p>{{ comment.text }}</p>
+            {% if comment.pressure_data %}
+                <p>Related to: {{ comment.pressure_data.sensor_location }} at {{ comment.pressure_data.timestamp }}</p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p class="small-muted">No comments yet.</p>
+    {% endfor %}
+{% endblock %}
