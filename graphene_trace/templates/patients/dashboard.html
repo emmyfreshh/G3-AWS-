@@ -9,6 +9,11 @@
             <div class="small-muted">Last update: <span id="last-update">—</span></div>
         </div>
 
+        <!-- ADDED: Patient ID number -->
+        <div class="small text-muted" style="margin-top:4px;">
+            Your Patient ID: {{ user.patient_id_number|default:"—" }}
+        </div>
+
         <div style="margin-top:18px;display:grid;grid-template-columns: 1fr 320px;gap:18px;align-items:start;">
             <div class="card-custom" style="padding:12px;">
                 <h3 style="margin-top:0;">Live Pressure Map</h3>

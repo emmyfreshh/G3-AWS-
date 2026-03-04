@@ -9,13 +9,29 @@
     <table class="table">
     {% for user in users %}
         <tr>
-            <td>{{ user.username }} - {{ user.role }} - {{ user.email }}</td>
+            <td>
+                <div>
+                    {{ user.username }} - {{ user.role }} - {{ user.email }}
+                </div>
+
+                {% if user.role == 'patient' %}
+                    <div class="small text-muted">
+                        Patient ID: {{ user.patient_id_number|default:"—" }}
+                    </div>
+                {% elif user.role == 'clinician' %}
+                    <div class="small text-muted">
+                        Clinician ID: {{ user.clinician_id_number|default:"—" }}
+                    </div>
+                {% endif %}
+            </td>
+
             <td>
             {% if user.role == 'patient' %}
                 Clinician: {{ user.clinician.username|default:'None' }}
                 <a href="{% url 'assign_clinician' user.id %}">Assign Clinician</a>
             {% endif %}
             </td>
+
             <td>
                 <a class="btn" href="{% url 'reset_password' user.id %}">Reset Password</a>
                 <form method="post" action="{% url 'delete_user' user.id %}" style="display:inline;" data-confirm="Delete this user?">
